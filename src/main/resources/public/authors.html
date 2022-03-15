@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>authors.html</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+
+        <script>
+            $(document).ready(function () {
+
+                // Select
+                $.getJSON("http://localhost:8080/api/authors", function (data) {
+                    var abc = '';
+
+                    $.each(data, function (key, value) {
+
+
+                        abc += '<tr>';
+
+                        abc += '<td>' + value.id + '</td>';
+
+                        abc += '<td><input type="text" class="form-control" id="myInput' + value.id + '" value="' + value.name + '"</td>';
+                        
+                        abc += '<td>' + value.name + '</td>';
+
+
+
+
+
+                        abc += '<td><a class="btn btn-info btn-xs updateButton" id="' + value.id + '" value="' + value.name + '">Update</a></td>';
+
+                        abc += '<td><a class="btn btn-danger btn-xs deleteButton" id="' + value.id + '" value="' + value.name + '">Delete</a></td>';
+
+                        abc += '</tr>';
+
+
+                    });
+
+                    $('#myTable').append(abc);
+
+                });
+
+
+
+                // Add New Row to Add
+                $(document).on('click', '.addNewRowToAdd', function () {
+
+                    //alert("Add New Row");
+
+                    var markup = "<tr> <td></td> \n\
+                                 <td><input type='text' class='form-control' id='myInputAdd' ></td> \n\
+                                 <td><a class='btn btn-success btn-xs addNewRecordButton'>Add</a></td> </tr>";
+                    $("table tbody").append(markup);
+
+                });
+
+
+
+
+
+                // Add->Post
+                $(document).on('click', '.addNewRecordButton', function () {
+                    //alert($(this).attr("id"));    
+                    //$("#mybutton").click(function () {
+
+
+                    alert("addNewRecordButton was pressed");
+
+//                    var myid = $(this).attr("id");
+//                    alert(myid);
+//
+                    var str = $("#myInputAdd").val();
+                    alert(str);
+
+                    // var myname=$(this).attr("value"); 
+
+                    // alert($("#myInput").val());
+                    //alert(myname);
+
+                    // var str = "Babis o theos";
+                    var jsonData = {"name": str};
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "http://localhost:8080/api/authors/",
+                        contentType: 'application/JSON',
+                        data: JSON.stringify(jsonData),
+
+                        success: function () {},
+                        error: function () {}
+                    });
+                });
+
+
+
+
+
+                // Update
+                $(document).on('click', '.updateButton', function () {
+                    //alert($(this).attr("id"));    
+                    //$("#mybutton").click(function () {
+
+                    var myid = $(this).attr("id");
+                    alert(myid);
+
+                    var str = $("#myInput" + myid).val();
+                    alert(str);
+
+                    // var myname=$(this).attr("value"); 
+
+                    // alert($("#myInput").val());
+                    //alert(myname);
+
+//                    var name = "Babis o theos";
+                    var jsonData = {"name": str};
+
+                    $.ajax({
+                        type: 'PUT',
+                        url: "http://localhost:8080/api/authors/" + myid,
+                        contentType: 'application/JSON',
+                        data: JSON.stringify(jsonData),
+
+                        success: function () {},
+                        error: function () {}
+                    });
+                });
+
+
+
+
+                // Delete
+                $(document).on('click', '.deleteButton', function () {
+                    //alert($(this).attr("id"));    
+                    //$("#mybutton").click(function () {
+
+                    alert("delete");
+
+                    var myid = $(this).attr("id");
+                    alert(myid);
+
+//                    var str = $("#myInput" + myid).val();
+//                    alert(str);
+
+                    // var myname=$(this).attr("value"); 
+
+                    // alert($("#myInput").val());
+                    //alert(myname);
+
+//                    var name = "Babis o theos";
+                    var jsonData = {"id": myid};
+
+                    $.ajax({
+                        type: 'DELETE',
+                        url: "http://localhost:8080/api/authors/" + myid,
+                        contentType: 'application/JSON',
+                        data: JSON.stringify(jsonData),
+
+                        success: function () {},
+                        error: function () {}
+                    });
+                });
+
+
+
+
+
+
+
+
+
+            });
+        </script>
+
+
+
+    </head>
+
+    <body>
+
+
+        <div class="container">
+            <div class="row">
+
+
+                <h1 h1 class="text-danger text-center">Authors</h1>
+                <br/><br/>
+                <a class="btn btn-info btn-xs addNewRowToAdd" role="button">Add Author</a>
+                <br/><br/><br/><br/><br/><br/><br/><br/>
+
+                <input class="form-control" id="myInput5" type="text" placeholder="Search..">
+                <br/><br/><br/><br/><br/><br/><br/><br/>
+                <div class="table-responsive">
+                    <div class="col-xs-12">
+                        <table class="table table-bordered table-striped" id="myTable">
+                            <thead>
+                                <tr> <th>id</th> <th>name</th> </tr>
+                            </thead>
+
+                            <tbody id="myTable">      
+                            
+                            </tbody>
+                        </table>    
+                    </div>
+                </div>                  
+
+
+                <script>
+            $(document).ready(function () {
+                $("#myInput5").on("keyup", function () {
+                    var value = $(this).val().toLowerCase();
+                    $("#myTable tr").filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+            });
+        </script>
+                
+
+
+            </div>    
+        </div>    
+
+        
+
+    </body>
+</html>
